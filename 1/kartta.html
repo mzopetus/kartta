@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Karttaprojekti</title>
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" />
+		<style>
+			body {
+				padding: 0;
+				margin: 0;
+			}
+			html, body, #map {
+				height: 100%;
+				width: 100vw;
+			}
+			p {
+			    font-size: 18px;
+				color: black;
+			}
+			input {
+				padding: 10px 13px;
+				font-size: 16px;
+			}
+			button {
+				background-color: #2600ff; /* Violetti */
+				border: none;
+				color: white;
+				padding: 10px 13px;
+				text-align: center;
+				display: inline-block;
+				font-size: 16px;
+				cursor: pointer;
+			}
+			.bussi {
+				/*opacity: 0.5;*/
+			}
+		</style>
+	</head>
+	<body>
+		<div id="map"></div>
+		<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+		<script src="leaflet.rotatedMarker.js"></script>
+		
+		<script>
+			var map = L.map('map').setView([61.4978, 23.7610], 13);
+
+			L.tileLayer('https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png', {
+				attribution: '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a>',
+				minZoom: 1,
+				maxZoom: 19
+			}).addTo(map);
+
+			var kyselyt = [
+				{kysymys: 'Mikä patsaalla on kädessä?', vastaus: 'miekka', koordinaatit: [61.497470, 23.752077]},
+				{kysymys: 'Montako terälehteä on ikkunassa?', vastaus: '12', koordinaatit: [61.49713, 23.74976]},
+				{kysymys: 'Kysymys3', vastaus: 'vastaus3', koordinaatit: [61.497470, 23.772077]},
+				{kysymys: 'Kysymys4', vastaus: 'vastaus4', koordinaatit: [61.497470, 23.782077]},
+			];
+			var moneskoKysely = 0;
+			var viimeinenKysely = kyselyt.length - 1;
+			
+			function lisaaKysymys(kysely) {
+				var marker = L.marker(kysely.koordinaatit).addTo(map);
+				marker.bindPopup(`
+					<form>
+						<p>${kysely.kysymys}</p>
+						<input name="vastaus" />
+						<button>Oisko oikein</button>
+					</form>
+				`, {maxWidth: 400});
+
+				function handleSubmit(event) {
+					event.preventDefault();
+					var lomake = event.target;
+					var pelaajanVastaus = lomake.vastaus.value;
+					var oikeaVastaus = kysely.vastaus;
+					console.log(lomake);
+					console.log(lomake.vastaus);
+					console.log(pelaajanVastaus);
+					if (pelaajanVastaus.toLowerCase() == oikeaVastaus.toLowerCase()) {
+						alert('Oikein!');
+						marker.remove();
+						document.removeEventListener('submit', handleSubmit);
+						moneskoKysely = moneskoKysely + 1;
+						if (moneskoKysely == viimeinenKysely) {
+							alert('Suoritit kaikki! Hyvin tehty.');
+						}
+						else {
+							lisaaKysymys(kyselyt[moneskoKysely]);
+						}
+					}
+					else {
+						alert('Väärin :(');
+					}
+				}
+
+				document.addEventListener('submit', handleSubmit);
+			}
+			
+			lisaaKysymys(kyselyt[moneskoKysely]);
+
+
+
+
+			/*
+			var liikkuva = L.marker([61.497470, 23.752077]).addTo(map);
+
+			function liiku() {
+				var vanhaSijainti = liikkuva.getLatLng();
+				liikkuva.setLatLng([vanhaSijainti.lat + 0.00001, vanhaSijainti.lng]);
+			}
+
+			setInterval(liiku, 100);
+			*/
+
+			/*
+			var busIcon = L.icon({
+				iconUrl: 'bussi-violetti.png',
+				iconSize:     [64, 32], // size of the icon
+				iconAnchor:   [32, 16], // point of the icon .. to marker's location
+				className: 'bussi',
+			});
+			*/
+
+
+
+
+
+
+
+
+
+			var busIcon = L.icon({
+				iconUrl: 'bussi-violetti.png',
+				iconSize:     [64, 32], // size of the icon
+				iconAnchor:   [32, 16], // point of the icon .. to marker's location
+				popupAnchor:  [32, -10],
+				className: 'bussi',
+			});
+			var bussiNastat = {};
+			
+			function haeBussit() {
+				fetch('http://data.itsfactory.fi/siriaccess/vm/json').then(sivu => sivu.json()).then(naytaBussit);
+			}
+			
+			function naytaBussit(data) {
+				console.log(data);
+				var bussit = data.Siri.ServiceDelivery.VehicleMonitoringDelivery[0].VehicleActivity;
+				console.log(bussit);
+				for (var bussi of bussit) {
+					var kohde = bussi.MonitoredVehicleJourney.DestinationName.value;
+					var numero = bussi.MonitoredVehicleJourney.LineRef.value;
+					var lat = bussi.MonitoredVehicleJourney.VehicleLocation.Latitude;
+					var lon = bussi.MonitoredVehicleJourney.VehicleLocation.Longitude;
+					var suunta = bussi.MonitoredVehicleJourney.Bearing;
+					suunta = suunta + 270;
+					var tunniste = bussi.MonitoredVehicleJourney.VehicleRef.value;
+					if (tunniste in bussiNastat) {
+						bussiNastat[tunniste].setLatLng([lat, lon]);
+						if (suunta != 270) {
+							bussiNastat[tunniste].setRotationAngle(suunta);
+						}
+					}
+					else {
+						bussiNastat[tunniste] = L.marker([lat, lon], {icon: busIcon, rotationAngle: suunta}).addTo(map);
+						bussiNastat[tunniste].bindPopup(`Linja: <strong>${numero}</strong>, päätepysäkki: <strong>${kohde}</strong>`);
+					}
+				}
+			}
+			
+			haeBussit();
+			//setInterval(haeBussit, 1000);
+		</script>
+	</body>
+</html>
