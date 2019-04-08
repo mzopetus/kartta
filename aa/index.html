@@ -1,1 +1,151 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<meta charset="utf-8">
+	 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"/>
+		<title>öpö</title>
+		<style>
+		body {padding: 0; margin: 0;}
+		html, body, #mapid
+		
+		{
+		height: 100%;
+		width: 100vw;
+		}
+				p {
+			    font-size: 18px;
+				color: blue;
+			}
+			button {
+				background-color: #4CAF50; /* Vihree */
+				border: none;
+				color: white;
+				padding: 10px 13px;
+				text-align: center;
+				display: inline-block;
+				font-size: 16px;
+				cursor: pointer;
+			}
+		</style>
+	</head>
+	<body>
+		 <div id="mapid"></div>
+		 <!-- Make sure you put this AFTER Leaflet's CSS -->
+ <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+  <script src="hasun pakun käännös.js"></script>
+		<script>
+		var mymap = L.map('mapid').setView([ 61.49911, 23.78712], 13);
+
+		L.tileLayer('https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png', {
+	maxZoom: 18,
+	                 attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+             }).addTo(mymap);
+											
+			var kyselyt = [
+			{kysymys: `onko peruna hyvää?`, vastaus: `peruna`, koordinaatit: [ 61.49911, 23.78712]},
+					{kysymys: `onko parsakaali hyvää?`, vastaus: `parsakaali`, koordinaatit: [ 61.49911, 23.76712]},
+					{kysymys: `onko porkkana hyvää?`, vastaus: `porkkana`, koordinaatit: [ 61.49911, 23.75712]},
+					{kysymys: `onko päärynä hyvää?`, vastaus: `päärynä`, koordinaatit: [ 61.49911, 23.77712]},];
+					var moneskokysely = 0;
+					
+					var viimeinenkysely = 3;
+			function lisaaKysymys (kysely) {
+		   var marker = L.marker(kysely.koordinaatit).addTo(mymap);
+		   marker.bindPopup(`
+			<form>
+				<p>${kysely.kysymys}</p>
+				<input name="vastaus"/>
+				<button>Perunoi vastaus</button>
+			</form>
+		                  `);
+		
+				function handleSubmit(event) {
+			event.preventDefault();
+				alert (`oikein`)
+				var lomake = event.target;
+			var oikeavastaus = kysely.vastaus;
+			var pelaajanVastaus = lomake.vastaus.value;
+				console.log(lomake);
+			console.log(lomake.vastaus)
+				console.log(pelaajanVastaus)
+			if (pelaajanVastaus == oikeavastaus) {
+				marker.remove();
+				document.removeEventListener(`submit`,handleSubmit);
+				moneskokysely = moneskokysely +1;
+				if (moneskokysely == viimeinenkysely){
+				alert ('kaikki oikein')
+				}
+				else{
+							lisaaKysymys(kyselyt[moneskokysely]);
+				}
+			
+			}
+			else {
+				alert (`väärin : (`);
+			}
+		}
+		document.addEventListener(`submit`,handleSubmit);
+		}
+		lisaaKysymys(kyselyt[moneskokysely]);
+
+		/*
+		var liikkuva = L.marker([61.49911, 23.78712]
+		function liiku(){
+		var vanhaSijainti = Liikkuva getLatLng
+		Liikkuva.SetLatLng([vanhasijainti.Lat + 0,00001, vanhasijainti.Lng])
+				var vanhasijainti.lat, vanhaSijainti.lng));
+				}
+set interval(liiku 100);
+				*/
+				
+			function haebussit() {
+		fetch ('http://data.itsfactory.fi/siriaccess/vm/json').then( sivu => sivu.json()).then(bussit)
+		}
+		
+		var bussiNastat = {};
+		var pakuicon = L.icon({
+    iconUrl: 'hasu paku.png',
+    
+    iconSize:     [64, 31], // size of the icon
+    
+    iconAnchor:   [32, 15], // point of the icon which will correspond to marker's location
+    className: "bussi"
+    
+});
+		
+		function bussit(data){
+		console.log(data)
+			var bussit = data.Siri.ServiceDelivery.VehicleMonitoringDelivery[0].VehicleActivity;
+			//console.log(bussit);
+			for (var bussi of bussit){
+				var kohde = bussi.MonitoredVehicleJourney.DestinationName.value;
+				var numero = bussi.MonitoredVehicleJourney.LineRef.value;
+				var lat = bussi.MonitoredVehicleJourney.VehicleLocation.Latitude
+				var lon = bussi.MonitoredVehicleJourney.VehicleLocation.Longitude;
+				var suunta = bussi.MonitoredVehicleJourney.Bearing
+				suunta = suunta + 270;
+				var tunniste = bussi.MonitoredVehicleJourney.VehicleRef.value;
+				if(tunniste in bussiNastat){
+				bussiNastat[tunniste].setLatLng([lat, lon])
+				if (suunta !=270)
+								bussiNastat[tunniste].setRotationAngle(suunta)
+				}
+				else {
+					bussiNastat[tunniste] = L.marker([lat,lon], {icon: pakuicon,
+					    rotationAngle:suunta}).addTo(mymap);
+						bussiNastat[tunniste].bindPopup(`${numero}`);
+				}
+			
+			}
+		}
+		
+		setInterval(haebussit,5000);
+			//setInterval(haebussit, 5000);
+		haebussit();
+			
+		
+		
+		</script>
+	</body>
+</html>
 
