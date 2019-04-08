@@ -1,1 +1,666 @@
+<!DOCTYPE html><!--äle poiste tymhe tae poistan sun koodis:( -->
+<html style="cursor: wait !inportant;">
+	
+	<head>
+		
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Karttaprojekti</title>
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" />
+		<style>
+			html, body, #mapid {
+				height: 100%;
+				width: 100vw;
+			
+		    }
+		    p{color:blue;
+			 font-size: 19px;
+			}
+			
+		button {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  }
+         .bussi {
+             opacity: 0.5;
+		
+		}
+		</style>
+	</head>
+	<body>
+		<div id="mapid"></div>
+		<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+		<script src="leaflet.rotatedMarker.js"></script>
+		<script>
+			var map = L.map('mapid').setView([61.453433, 23.333352], 13);
+
+			L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			  maxZoom: 19,
+			  attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+			}).addTo(map);
+			
+		var kysely = [
+
+        {kysymys: 'mitä tämä on ',vastaus: atob('am90YWlu'), koordinaatit: [62.453433, 23.333351]},
+		{kysymys: 'mitä tämä on ',vastaus: atob('am90YWlu'), koordinaatit: [61.453433, 23.333351]},
+		{kysymys: 'mitä tämä on ',vastaus: atob('am90YWlu'), koordinaatit: [63.453433, 23.333351]},
+		{kysymys: 'mitä tämä on ',vastaus: atob('am90YWlu'), koordinaatit: [64.453433, 23.333351]},
+		];
+			
+		function lisaakysymys(kysely) {
+			
+			//var marker = L.marker([61.453433, 23.333352]).addTo(map);
+			//marker.bindPopup('miksi laitoin tän tänne ? vinkki on en ....')
+			var market = L.marker(kysely.koordinaatit).addTo(map);
+			market.bindPopup(`
+				<form>
+				<p>${kysely.kysymys}</p>
+				<input name = "vastaus" />
+			<button> moi      </button>
+			</form>
+			`);
+			
+			function kasitasalaisuus(event) {
+			   event.preventDefault();
+			   alert('sanoja tuli ja meni');
+			   var vastike = event.target;
+			   var tyypinvastaus = vastike.vastaus.value;
+			   var oikeavastaus = kysely.vastaus;
+			   console.log(vastike);
+			   console.log(vastike.vastaus);
+			   console.log(tyypinvastaus)
+			   if (tyypinvastaus.toLowerCase () == oikeavastaus.toLowerCase())   {
+				   alert('oikein');
+			   }
+			   else {
+					//alert('väärin meni ja oivoi hertan maailmaa :(');
+			   }
+			}
+			
+			document.addEventListener('submit',kasitasalaisuus);
+		
+		}
+		
+		
+		
+		lisaakysymys (kysely[0]);
+		lisaakysymys (kysely[1]);
+		lisaakysymys (kysely[2]);
+		lisaakysymys (kysely[3]);
+		
+		
+		var liikkuva = L.marker([61.453433, 23.333351]).addTo(map);
+		
+		
+		function liiku() {
+		    var vanhaSiajainti = liikkuva.getLatLng();
+			liikkuva.setLatLng ([vanhaSiajainti.lat + 0.00009, vanhaSiajainti.lng]);
+		
+		
+		
+		}
+		
+		setInterval(liiku, 1);
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		var bussIcon = L.icon({
+    iconUrl: 'bussi pinkki.png',
+
+    iconSize:     [64, 31], // size of the icon
+    iconAnchor:   [32, 15], // point of the icon which will correspond to marker's location
+    className: 'bussi',
+});
+		
+		
+		
+		
+		var bussiNastat = {};
+		
+		
+		
+		
+		
+		function haeBussit() {
+		fetch('http://data.itsfactory.fi/siriaccess/vm/json').then(sivu => sivu.json()).then(bussit);
+		
+		
+		}
+		
+		
+		
+		
+		function bussit(data) {
+		    //console.log(data);
+			var bussit = data.Siri.ServiceDelivery.VehicleMonitoringDelivery[0].VehicleActivity
+			//console.log(bussit);
+			for (var bussi of bussit) {
+				var kohde = bussi.MonitoredVehicleJourney.DestinationName.value;
+				var numero = bussi.MonitoredVehicleJourney.LineRef.value;
+				//console.log(kohde, numero);
+				var suunta = bussi.MonitoredVehicleJourney.Bearing;
+				var lat = bussi.MonitoredVehicleJourney.VehicleLocation.Latitude;
+				var lon = bussi.MonitoredVehicleJourney.VehicleLocation.Longitude;
+				var tunniste = bussi.MonitoredVehicleJourney.VehicleRef.value;
+			    suunta = suunta + 270;
+			if (tunniste in bussiNastat) {
+			bussiNastat[tunniste].setLatLng([lat, lon]);
+			bussiNastat[tunniste].setRotationAngle(suunta);
+			}
+			else {
+				 bussiNastat[tunniste] = L.marker([lat, lon], {icon: bussIcon,rotationAngle: suunta}).addTo(map);
+			     bussiNastat[tunniste].bindPopup(`${numero} tää on alexsin bussi eu on tymhe koske articla 13  ${kohde}`);
+			
+			
+			}
+		
+					}
+
+			
+		}
+		
+		setInterval(haeBussit, 1000);
+		</script>
+		
+	
+	</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
