@@ -52,8 +52,8 @@
 			}).addTo(map);
 
 			var kyselyt = [
-				{kysymys: 'Mikä patsaalla on kädessä?', vastaus: 'miekka', koordinaatit: [61.497470, 23.752077]},
-				{kysymys: 'Montako terälehteä on ikkunassa?', vastaus: '12', koordinaatit: [61.49713, 23.74976]},
+				{kysymys: 'Mikä patsaalla on kädessä?', vastaus: atob('bWlla2th'), koordinaatit: [61.497470, 23.752077]},
+				{kysymys: 'Montako terälehteä on ikkunassa?', vastaus: atob('MTI='), koordinaatit: [61.49713, 23.74976]},
 				{kysymys: 'Kysymys3', vastaus: 'vastaus3', koordinaatit: [61.497470, 23.772077]},
 				{kysymys: 'Kysymys4', vastaus: 'vastaus4', koordinaatit: [61.497470, 23.782077]},
 			];
@@ -133,15 +133,15 @@
 
 			var busIcon = L.icon({
 				iconUrl: 'bussi-violetti.png',
-				iconSize:     [64, 32], // size of the icon
-				iconAnchor:   [32, 16], // point of the icon .. to marker's location
-				popupAnchor:  [32, -10],
+				iconSize:     [64, 32],
+				iconAnchor:   [32, 16],
+				popupAnchor:  [0, -16],
 				className: 'bussi',
 			});
 			var bussiNastat = {};
 			
 			function haeBussit() {
-				fetch('http://data.itsfactory.fi/siriaccess/vm/json').then(sivu => sivu.json()).then(naytaBussit);
+				fetch('https://cors-anywhere.herokuapp.com/http://data.itsfactory.fi/siriaccess/vm/json').then(sivu => sivu.json()).then(naytaBussit);
 			}
 			
 			function naytaBussit(data) {
@@ -170,7 +170,7 @@
 			}
 			
 			haeBussit();
-			//setInterval(haeBussit, 1000);
+			setInterval(haeBussit, 1000);
 		</script>
 	</body>
 </html>
