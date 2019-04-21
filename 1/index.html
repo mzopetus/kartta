@@ -141,7 +141,7 @@
 			var bussiNastat = {};
 			
 			function haeBussit() {
-				fetch('https://cors-anywhere.herokuapp.com/http://data.itsfactory.fi/siriaccess/vm/json').then(sivu => sivu.json()).then(naytaBussit);
+				fetch('https://tampereenbussit.herokuapp.com/siriaccess/vm/json/').then(sivu => sivu.json()).then(naytaBussit);
 			}
 			
 			function naytaBussit(data) {
