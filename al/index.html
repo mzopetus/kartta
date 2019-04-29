@@ -2,12 +2,20 @@
 <html style="cursor: wait !inportant;">
 	
 	<head>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@v0.66.2/dist/L.Control.Locate.min.css" />
+
 		
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Karttaprojekti</title>
 		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" />
 		<style>
+			body {
+			   padding: 0;
+			   margin: 0;
+			
+			}
 			html, body, #mapid {
 				height: 100%;
 				width: 100vw;
@@ -35,9 +43,11 @@
 		</style>
 	</head>
 	<body>
+		
 		<div id="mapid"></div>
 		<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
 		<script src="leaflet.rotatedMarker.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@v0.66.2/dist/L.Control.Locate.min.js" charset="utf-8"></script>
 		<script>
 			var map = L.map('mapid').setView([61.453433, 23.333352], 13);
 
@@ -209,7 +219,7 @@
 		
 		function haeBussit() {
 		
-		fetch('https://tampereenbussit.herokuapp.com/siriaccess/vm/json/').then(sivu => sivu.json()).then(bussit);
+		fetch('https://cors-anywhere.herokuapp.com/http://data.itsfactory.fi/siriaccess/vm/json').then(sivu => sivu.json()).then(bussit);
 		
 		
 		}
@@ -243,29 +253,17 @@
 		
 					}
 
-			
+
 		}
 		
 		setInterval(haeBussit, 1000);
+		
+L.control.locate().addTo(map);
 		</script>
 		
 	
 	</body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
