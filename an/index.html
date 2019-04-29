@@ -5,6 +5,8 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Karttaprojekti</title>
 		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" />
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@v0.66.2/dist/L.Control.Locate.min.css" />
 		<style>
 			body {
 				padding: 0;
@@ -38,6 +40,7 @@
 		<div id="map"></div>
 		<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
 		<script src="leaflet.rotatedMarker.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@v0.66.2/dist/L.Control.Locate.min.js" charset="utf-8"></script>
 		<script>
 			var map = L.map('map').setView([61.4978, 23.7610], 13);
 
@@ -48,8 +51,8 @@
 			}).addTo(map);
 
 			var kyselyt = [
-				{kysymys: 'Mikä patsaalla on kädessä?', vastaus: 'miekka', koordinaatit: [61.497470, 23.752077]},
-				{kysymys: 'Montako terälehteä on ikkunassa?', vastaus: '12', koordinaatit: [61.49713, 23.74976]},
+				{kysymys: 'Mikä patsaalla on kädessä?', vastaus: atob   ('bWlla2th'), koordinaatit: [61.497470, 23.752077]},
+				{kysymys: 'Montako terälehteä on ikkunassa?', vastaus: atob ('MTI='), koordinaatit: [61.49713, 23.74976]},
 				{kysymys: 'Kysymys3', vastaus: 'vastaus3', koordinaatit: [61.497470, 23.772077]},
 				{kysymys: 'Kysymys4', vastaus: 'vastaus4', koordinaatit: [61.497470, 23.782077]},
 			
@@ -109,7 +112,7 @@
 });
 			
 			function haeBussit() {
-				fetch('http://data.itsfactory.fi/siriaccess/vm/json').then(sivu => sivu.json()).then(bussit);
+				fetch('https://tampereenbussit.herokuapp.com/siriaccess/vm/json/').then(sivu => sivu.json()).then(bussit);
 			}
 			
 			function bussit(data) {
@@ -137,6 +140,10 @@
 			
 			haeBussit();
 			setInterval(haeBussit, 1000);
+			
+			
+				
+				L.control.locate().addTo(map);
 		</script>
 	</body>
 </html>
