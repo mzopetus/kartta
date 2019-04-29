@@ -3,6 +3,9 @@
 	<head>
 	<meta charset="utf-8">
 	 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"/>
+	 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@v0.66.2/dist/L.Control.Locate.min.css" />
+
 		<title>öpö</title>
 		<style>
 		body {padding: 0; margin: 0;}
@@ -29,9 +32,11 @@
 		</style>
 	</head>
 	<body>
+	
 		 <div id="mapid"></div>
 		 <!-- Make sure you put this AFTER Leaflet's CSS -->
  <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@v.66.2/dist/L.Control.Locate.min.js" charset="utf-8"></script>
   <script src="hasun pakun käännös.js"></script>
 		<script>
 		var mymap = L.map('mapid').setView([ 61.49911, 23.78712], 13);
@@ -42,7 +47,7 @@
              }).addTo(mymap);
 											
 			var kyselyt = [
-			{kysymys: `onko peruna hyvää?`, vastaus: `peruna`, koordinaatit: [ 61.49911, 23.78712]},
+			{kysymys: `onko peruna hyvää?`, vastaus: atob (`cGVydW5h`), koordinaatit: [ 61.49911, 23.78712]},
 					{kysymys: `onko parsakaali hyvää?`, vastaus: `parsakaali`, koordinaatit: [ 61.49911, 23.76712]},
 					{kysymys: `onko porkkana hyvää?`, vastaus: `porkkana`, koordinaatit: [ 61.49911, 23.75712]},
 					{kysymys: `onko päärynä hyvää?`, vastaus: `päärynä`, koordinaatit: [ 61.49911, 23.77712]},];
@@ -64,7 +69,6 @@
 				alert (`oikein`)
 				var lomake = event.target;
 			var oikeavastaus = kysely.vastaus;
-			var pelaajanVastaus = lomake.vastaus.value;
 				console.log(lomake);
 			console.log(lomake.vastaus)
 				console.log(pelaajanVastaus)
@@ -75,7 +79,8 @@
 				if (moneskokysely == viimeinenkysely){
 				alert ('kaikki oikein')
 				}
-				else{
+				else{			var pelaajanVastaus = lomake.vastaus.value;
+
 							lisaaKysymys(kyselyt[moneskokysely]);
 				}
 			
@@ -99,7 +104,7 @@ set interval(liiku 100);
 				*/
 				
 			function haebussit() {
-		fetch ('http://data.itsfactory.fi/siriaccess/vm/json').then( sivu => sivu.json()).then(bussit)
+		fetch ('https://tampereenbussit.herokuapp.com/siriaccess/vm/json/').then( sivu => sivu.json()).then(bussit)
 		}
 		
 		var bussiNastat = {};
